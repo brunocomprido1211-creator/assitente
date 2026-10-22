@@ -1,0 +1,21 @@
+services:
+  db:
+    image: postgres:16
+    restart: always
+    env_file: ../.env
+    volumes: [dbdata:/var/lib/postgresql/data]
+  app:
+    build: ..
+    restart: always
+    env_file: ../.env
+    depends_on: [db]
+  caddy:
+    image: caddy:2
+    restart: always
+    env_file: ../.env
+    ports: ["80:80", "443:443"]
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddydata:/data
+    depends_on: [app]
+volumes: { dbdata: {}, caddydata: {} }
